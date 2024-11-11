@@ -16,7 +16,7 @@ export default function Home() {
     if (res.ok) {
       alert('Customer added successfully!');
     } else {
-      alert('Failed to add customer');
+      alert('Failed to add customer bro!');
     }
   };
 
