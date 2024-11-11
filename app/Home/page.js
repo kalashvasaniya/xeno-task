@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { auth } from '../../auth';
 import { redirect } from 'next/navigation';
 import SignIn from '../components/signin/page';
+import CampaignManager from '../CampaignManager/page';
 
 const Home = async () => {
     const session = await auth();
@@ -57,6 +58,9 @@ const Home = async () => {
                     </div>
                 </nav>
             </header>
+            <div className="mt-20">
+                <CampaignManager />
+            </div>
         </div>
     );
 };
