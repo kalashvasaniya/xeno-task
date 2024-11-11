@@ -41,7 +41,7 @@ export default function Home() {
               <SignIn className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" />
               <a
                 href="#get-started"
-                className="inline-block bg-blue-600 py-2 px-6 text-sm font-medium text-white rounded-full hover:bg-blue-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="md:inline-block hidden bg-blue-600 py-2 px-6 text-sm font-medium text-white rounded-full hover:bg-blue-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Get Started
               </a>
