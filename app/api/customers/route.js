@@ -1,24 +1,39 @@
+// src/app/api/customers/route.js
 import { NextResponse } from 'next/server';
-import { Customer } from '@/models/Customer';
-import connectDB from '@/lib/db';
+import connectDB from '../../../lib/db';
+import Customer from '../../../models/Customer';
 
-export async function POST(request) {
+export async function POST(req) {
     try {
+        // Connect to the database
         await connectDB();
-        const data = await request.json();
-        const customer = await Customer.create(data);
-        return NextResponse.json(customer, { status: 201 });
-    } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-}
 
-export async function GET() {
-    try {
-        await connectDB();
-        const customers = await Customer.find({});
-        return NextResponse.json(customers);
+        // Parse the request body
+        const { name, email } = await req.json();
+        console.log('Creating customer2:', name, email);
+
+        // Check if the customer already exists by email
+        let customer = await Customer.findOne({ email: email });
+
+        if (!customer) {
+            // Create a new customer if not found
+            customer = new Customer({
+                name: name,
+                email: email,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+            await customer.save();
+            console.log('Customer created successfully:', customer);
+        } else {
+            console.log('Customer already exists:', customer);
+        }
+
+        // Respond with success
+        return NextResponse.json({ success: true, customer });
+
     } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('Error in customer creation:', error);
+        return NextResponse.json({ success: false, message: error.message }, { status: 400 });
     }
 }

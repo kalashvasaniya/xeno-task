@@ -13,5 +13,5 @@ const CampaignSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
-export default Campaign;
+mongoose.models = {}
+module.exports = mongoose.model('Campaign', CampaignSchema);

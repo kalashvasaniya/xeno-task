@@ -12,6 +12,33 @@ const Home = async () => {
         redirect('/');
     }
 
+    const { name, email } = session.user; // Assuming the session contains user info with name and email
+
+    // utils/api.js
+    const saveCustomerData = async (name, email) => {
+        try {
+            const response = await fetch('http://localhost:3000/api/customers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to save customer data: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('Customer data saved:', data);
+        } catch (error) {
+            console.error('Error saving customer data:', error);
+        }
+    };
+
+    saveCustomerData(name, email);
+
+
     return (
         <div>
             <header className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100">

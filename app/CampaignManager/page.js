@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import { useState } from 'react';
 
 const CampaignManager = () => {
@@ -33,10 +33,21 @@ const CampaignManager = () => {
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`Failed to create campaign: ${response.statusText}`);
+            }
+
             const campaign = await response.json();
             setCampaigns([campaign, ...campaigns]);
+            setConditions([]); // Reset form after submission
+            setMessageTemplate('');
         } catch (error) {
-            console.error('Error creating campaign:', error);
+            console.error('Error creating campaign:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            return NextResponse.json({ error: error.message }, { status: 500 });
         }
     };
 
@@ -48,11 +59,11 @@ const CampaignManager = () => {
 
                     <div className="space-y-4">
                         {conditions.map((condition, index) => (
-                            <div key={index} className="flex gap-4">
+                            <div key={index} className="flex gap-4 items-center">
                                 <select
                                     value={condition.field}
                                     onChange={(e) => handleConditionChange(index, 'field', e.target.value)}
-                                    className="w-1/4 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-1/5 rounded-md border px-3 py-2"
                                 >
                                     <option value="">Select Field</option>
                                     <option value="totalSpending">Total Spending</option>
@@ -63,7 +74,7 @@ const CampaignManager = () => {
                                 <select
                                     value={condition.operator}
                                     onChange={(e) => handleConditionChange(index, 'operator', e.target.value)}
-                                    className="w-1/4 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-1/5 rounded-md border px-3 py-2"
                                 >
                                     <option value="">Select Operator</option>
                                     <option value=">">Greater Than</option>
@@ -76,68 +87,45 @@ const CampaignManager = () => {
                                     value={condition.value}
                                     onChange={(e) => handleConditionChange(index, 'value', e.target.value)}
                                     placeholder="Value"
-                                    className="w-1/4 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-1/5 rounded-md border px-3 py-2"
                                 />
 
-                                {index > 0 && (
-                                    <select
-                                        value={condition.logicOperator}
-                                        onChange={(e) => handleConditionChange(index, 'logicOperator', e.target.value)}
-                                        className="w-1/4 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    >
-                                        <option value="AND">AND</option>
-                                        <option value="OR">OR</option>
-                                    </select>
-                                )}
+                                <button
+                                    onClick={() => setConditions(conditions.filter((_, i) => i !== index))}
+                                    className="text-red-500"
+                                >
+                                    Remove
+                                </button>
                             </div>
                         ))}
-
-                        <button
-                            onClick={addCondition}
-                            className="w-full py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                        >
-                            Add Condition
-                        </button>
-
-                        <input
-                            value={messageTemplate}
-                            onChange={(e) => setMessageTemplate(e.target.value)}
-                            placeholder="Message template (use [Name] for personalization)"
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-
-                        <button
-                            onClick={createCampaign}
-                            className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                        >
-                            Create Campaign
-                        </button>
                     </div>
-                </div>
-            </div>
 
-            <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">Campaign History</h2>
-                {campaigns.map((campaign) => (
-                    <div
-                        key={campaign._id}
-                        className="bg-white rounded-lg shadow-md mb-4 overflow-hidden"
-                    >
-                        <div className="p-4">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="font-medium">{campaign.name}</h3>
-                                    <p className="text-sm text-gray-500">
-                                        Audience Size: {campaign.audienceSize}
-                                    </p>
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    {new Date(campaign.createdAt).toLocaleDateString()}
-                                </div>
+                    <button onClick={addCondition} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+                        Add Condition
+                    </button>
+
+                    <textarea
+                        value={messageTemplate}
+                        onChange={(e) => setMessageTemplate(e.target.value)}
+                        placeholder="Enter your message template"
+                        className="mt-4 w-full rounded-md border p-3"
+                    />
+
+                    <button onClick={createCampaign} className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
+                        Create Campaign
+                    </button>
+
+                    <h2 className="text-2xl font-semibold mt-6">Campaigns</h2>
+
+                    <div className="space-y-4 mt-4">
+                        {campaigns.map((campaign, index) => (
+                            <div key={index} className="bg-gray-100 p-4 rounded-lg">
+                                <h3 className="text-lg font-semibold">{campaign.name}</h3>
+                                <p className="text-sm text-gray-500">{campaign.segmentConditions.length} conditions</p>
                             </div>
+                        ))}
                         </div>
-                    </div>
-                ))}
+                </div>
             </div>
         </div>
     );

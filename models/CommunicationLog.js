@@ -9,4 +9,5 @@ const CommunicationLogSchema = new mongoose.Schema({
     updatedAt: Date
 });
 
-export const CommunicationLog = mongoose.models.CommunicationLog || mongoose.model('CommunicationLog', CommunicationLogSchema);
+mongoose.models = {}
+module.exports = mongoose.model('CommunicationLog', CommunicationLogSchema);

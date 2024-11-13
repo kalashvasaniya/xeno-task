@@ -9,4 +9,5 @@ const CustomerSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-export const Customer = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
+mongoose.models = {}
+module.exports = mongoose.model('Customer', CustomerSchema);
