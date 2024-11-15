@@ -13,7 +13,8 @@ async function sendEmail(customer, messageTemplate, campaignName) {
     if (shouldFail()) return false;
 
     try {
-        const message = messageTemplate.replace(/\[Name\]/g, customer.name || 'Customer');
+        const campaignName = '10% off on your next order!';
+        const message = `Hi ${customer.name}, here’s 10% off on your next order!`;
         const { data, error } = await resend.emails.send({
             from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
             to: [customer.email],
