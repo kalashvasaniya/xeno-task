@@ -41,14 +41,9 @@ const CampaignManager = () => {
         setConditions(updatedConditions);
     };
 
-    const handleCustomerSelection = (e) => {
-        const selected = Array.from(e.target.selectedOptions, option => option.value);
-        setSelectedCampaigns(selected);
-    };
-
     const createCampaign = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/campaigns`, {
+            const response = await fetch(`/api/campaigns`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
