@@ -1,96 +1,93 @@
-// src/app/api/campaigns/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '../../../lib/db';
 import Campaign from '../../../models/Campaign';
 import CommunicationLog from '../../../models/CommunicationLog';
-import Customer from '../../../models/Customer'; // Ensure this model is imported for audience queries
+import Customer from '../../../models/Customer';
 
-// Function to handle POST request for creating a new campaign
 export async function POST(request) {
     try {
-        // Connect to the database
         await connectDB();
+        const { name, segmentConditions, messageTemplate } = await request.json();
 
-        // Parse request data
-        const data = await request.json();
+        if (!name || !Array.isArray(segmentConditions) || !messageTemplate) {
+            return NextResponse.json(
+                { error: 'Invalid request data. Ensure all required fields are provided.' },
+                { status: 400 }
+            );
+        }
 
-        // Calculate the audience based on segment conditions
-        const audience = await calculateAudience(data.segmentConditions);
-        data.audienceSize = audience.length;
+        const audience = await calculateAudience(segmentConditions);
+        const audienceSize = audience.length;
+        const customerIDs = audience.map(customer => customer._id);
 
-        // Create a new campaign entry in the database
-        const campaign = await Campaign.create(data);
+        const campaign = await Campaign.create({
+            name,
+            segmentConditions,
+            messageTemplate,
+            customerIDs,
+            audienceSize,
+        });
 
-        // Generate communication logs for each member of the audience
-        const logs = audience.map(customer => ({
+        const logs = audience.map((customer) => ({
             campaignId: campaign._id,
             customerId: customer._id,
-            message: data.messageTemplate.replace('[Name]', customer.name) // Replace placeholder with actual customer name
+            message: messageTemplate.replace('[Name]', customer.name || 'Customer'),
         }));
 
-        // Insert the generated communication logs into the database
         await CommunicationLog.insertMany(logs);
-
-        // Return the created campaign as the response
         return NextResponse.json(campaign, { status: 201 });
     } catch (error) {
-        console.error('Campaign creation error:', error);
+        console.error('Campaign creation error:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-// Function to handle GET request to retrieve all campaigns
 export async function GET() {
     try {
-        // Connect to the database
         await connectDB();
-
-        // Fetch all campaigns, sorted by creation date (most recent first)
         const campaigns = await Campaign.find({}).sort({ createdAt: -1 });
-
-        // Return the campaigns as a JSON response
-        return NextResponse.json(campaigns);
+        return NextResponse.json(campaigns, { status: 200 });
     } catch (error) {
-        console.error('Campaign fetch error:', error);
+        console.error('Campaign fetch error:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-// Helper function to calculate the audience based on segment conditions
 async function calculateAudience(conditions) {
-    let query = {};
+    try {
+        let query = { $and: [] };
+        const orConditions = [];
 
-    conditions.forEach((condition, index) => {
-        const { field, operator, value, logicOperator } = condition;
+        conditions.forEach(({ field, operator, value, logicOperator }) => {
+            let fieldQuery = {};
 
-        let fieldQuery = {};
+            switch (operator) {
+                case '>': fieldQuery[field] = { $gt: Number(value) }; break;
+                case '<=': fieldQuery[field] = { $lte: Number(value) }; break;
+                case 'notVisitedInMonths':
+                    const monthsAgo = new Date();
+                    monthsAgo.setMonth(monthsAgo.getMonth() - Number(value));
+                    fieldQuery.lastVisit = { $lt: monthsAgo };
+                    break;
+                default: throw new Error(`Unsupported operator: ${operator}`);
+            }
 
-        // Build field-specific query based on the operator
-        switch (operator) {
-            case '>':
-                fieldQuery[field] = { $gt: Number(value) };
-                break;
-            case '<=':
-                fieldQuery[field] = { $lte: Number(value) };
-                break;
-            case 'notVisitedInMonths':
-                const monthsAgo = new Date();
-                monthsAgo.setMonth(monthsAgo.getMonth() - Number(value));
-                fieldQuery.lastVisit = { $lt: monthsAgo };
-                break;
-            default:
-                throw new Error(`Unsupported operator: ${operator}`);
+            if (logicOperator === 'OR') {
+                orConditions.push(fieldQuery);
+            } else {
+                query.$and.push(fieldQuery);
+            }
+        });
+
+        if (orConditions.length > 0) {
+            query = query.$and.length
+                ? { $and: [...query.$and, { $or: orConditions }] }
+                : { $or: orConditions };
         }
 
-        // Combine conditions with the appropriate logical operator
-        if (logicOperator === 'OR' && index > 0) {
-            query = { $or: [query, fieldQuery] };
-        } else {
-            query = { ...query, ...fieldQuery };
-        }
-    });
-
-    // Query the Customer collection and return the audience
-    const audience = await Customer.find(query);
-    return audience;
+        return await Customer.find(query);
+    } catch (error) {
+        console.error('Audience calculation error:', error);
+        throw error;
+    }
 }
