@@ -70,20 +70,6 @@ const CampaignManager = () => {
         }
     };
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="bg-red-50 p-6 rounded-lg max-w-md w-full mx-4">
-                    <p className="text-red-600 mb-4">Error: {error}</p>
-                    <button onClick={() => window.location.reload()}
-                        className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors">
-                        Retry
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen bg-gray-50 p-4 lg:p-8">
             <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
