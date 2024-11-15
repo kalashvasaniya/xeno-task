@@ -16,23 +16,24 @@ const Home = async () => {
 
     const saveCustomerData = async (name, email) => {
         try {
-            const response = await fetch(`${
-                process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-                }/api/customers`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/customers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email }),
             });
 
             if (!response.ok) {
+                console.error('Response not ok:', response.status, response.statusText);
                 throw new Error(`Error: ${response.statusText}`);
             }
 
-            await response.json();
+            const data = await response.json();
+            console.log('API Response:', data);
         } catch (error) {
-            console.error(error);
+            console.error('Error saving customer data:', error);
         }
     };
+
 
     saveCustomerData(name, email);
 
