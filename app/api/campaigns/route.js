@@ -131,19 +131,9 @@ export async function POST(request) {
     }
 }
 
-export async function GET(request) {
+export async function GET() {
     try {
         await connectDB();
-        const campaignId = new URL(request.url).searchParams.get('id');
-
-        if (campaignId) {
-            const campaign = await Campaign.findById(campaignId);
-            if (!campaign) {
-                return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
-            }
-            const stats = await updateCampaignStats(campaignId);
-            return NextResponse.json({ ...campaign.toObject(), deliveryStats: stats });
-        }
 
         const campaigns = await Campaign.find().sort({ createdAt: -1 });
         const campaignStats = await Promise.all(
