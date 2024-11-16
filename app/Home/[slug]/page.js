@@ -70,7 +70,6 @@ const Details = () => {
 
     const getStatusStyle = (status) => {
         const statusMap = {
-            'success': 'bg-green-500 text-white',
             'sent': 'bg-green-500 text-white',
             'error': 'bg-red-500 text-white',
             'failed': 'bg-red-500 text-white',
@@ -80,63 +79,65 @@ const Details = () => {
     };
 
     return (
-        <div className="p-4 max-w-4xl mx-auto">
-            {error && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="text-red-800 font-semibold">Error</div>
-                    <div className="text-red-600">{error}</div>
-                </div>
-            )}
+        <>
+            <div className="p-4 max-w-4xl mx-auto">
+                {error && (
+                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="text-red-800 font-semibold">Error</div>
+                        <div className="text-red-600">{error}</div>
+                    </div>
+                )}
 
-            <div className="mb-8 bg-white rounded-lg border shadow-sm">
-                <div className="p-6 border-b">
-                    <h2 className="text-xl font-bold">Campaign Details</h2>
-                </div>
-                <div className="p-6">
-                    {filteredCampaigns.length === 0 ? (
-                        <div className="text-gray-500">No campaign found</div>
-                    ) : (
-                        <div className="grid gap-4 md:grid-cols-2">
-                            {filteredCampaigns.map((campaign) => (
-                                <div key={campaign._id} className="p-4 rounded-lg bg-gray-50 border">
-                                    <h3 className="font-semibold mb-2">{campaign.name}</h3>
-                                    <p className="text-gray-600">Audience Size: {campaign.audienceSize}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="bg-white rounded-lg border shadow-sm">
-                <div className="p-6 border-b">
-                    <h2 className="text-xl font-bold">Communication Logs</h2>
-                </div>
-                <div className="p-6">
-                    {filteredLogs.length === 0 ? (
-                        <div className="text-gray-500">No communication logs found for this campaign</div>
-                    ) : (
-                        <div className="space-y-3">
-                            {filteredLogs.map((log) => (
-                                <div key={log._id} className="p-4 rounded-lg border bg-gray-50">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className={`px-3 py-1 text-sm rounded-full ${getStatusStyle(log.status)}`}>
-                                                {log.status}
-                                            </span>
-                                            <span className="text-sm font-medium text-gray-600">
-                                                {getCustomerName(log.customerId)}
-                                            </span>
-                                        </div>
+                <div className="mb-8 bg-white rounded-lg border shadow-sm">
+                    <div className="p-6 border-b">
+                        <h2 className="text-xl font-bold">Campaign Details</h2>
+                    </div>
+                    <div className="p-6">
+                        {filteredCampaigns.length === 0 ? (
+                            <div className="text-gray-500">No campaign found</div>
+                        ) : (
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {filteredCampaigns.map((campaign) => (
+                                    <div key={campaign._id} className="p-4 rounded-lg bg-gray-50 border">
+                                        <h3 className="font-semibold mb-2">{campaign.name}</h3>
+                                        <p className="text-gray-600">Audience Size: {campaign.audienceSize}</p>
                                     </div>
-                                    <p className="text-gray-700">{log.message}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-lg border shadow-sm">
+                    <div className="p-6 border-b">
+                        <h2 className="text-xl font-bold">Communication Logs</h2>
+                    </div>
+                    <div className="p-6">
+                        {filteredLogs.length === 0 ? (
+                            <div className="text-gray-500">No communication logs found for this campaign</div>
+                        ) : (
+                            <div className="space-y-3">
+                                {filteredLogs.map((log) => (
+                                    <div key={log._id} className="p-4 rounded-lg border bg-gray-50">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-3 py-1 text-sm rounded-full ${getStatusStyle(log.status)}`}>
+                                                    {log.status}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-600">
+                                                    {getCustomerName(log.customerId)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-700">{log.message}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
