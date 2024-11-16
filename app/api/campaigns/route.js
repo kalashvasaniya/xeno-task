@@ -5,8 +5,6 @@ import Campaign from '../../../models/Campaign';
 import CommunicationLog from '../../../models/CommunicationLog';
 import Customer from '../../../models/Customer';
 
-export const dynamic = 'force-dynamic'
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const shouldFail = () => Math.random() < 0.10;

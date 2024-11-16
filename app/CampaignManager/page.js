@@ -46,7 +46,7 @@ const CampaignManager = () => {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_HOST || 'http://localhost:3000'}/api/campaigns`, {
+            const response = await fetch(`https://xeno-task.vercel.app/api/campaigns`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
