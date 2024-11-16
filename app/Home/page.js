@@ -41,7 +41,7 @@ const Home = async () => {
         <div className="min-h-screen flex flex-col">
             <header className="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 border-b border-gray-200 shadow-sm">
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-                    <a href="/" className="flex items-center">
+                    <a href="/Home" className="flex items-center">
                         <Image
                             src="https://cdn.prod.website-files.com/620353a026ae70e21288308a/6536204e44d00a50cb63e6a4_Vector.svg"
                             alt="Xeno"
