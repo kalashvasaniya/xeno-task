@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link'; // Fixed import statement
 
 const CampaignManager = () => {
     const [conditions, setConditions] = useState([]);
@@ -155,44 +156,49 @@ const CampaignManager = () => {
 
                     <div className="mt-12">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Campaigns</h2>
-                        <div className="space-y-6">
+                        <div className="space-x-6">
                             {campaigns?.length > 0 ? (
                                 campaigns.map((campaign, index) => (
-                                    <div key={index} className="bg-white p-6 rounded-lg border hover:shadow-lg transition-shadow">
-                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                                            <h3 className="text-xl font-semibold">{campaign.name}</h3>
-                                            <div className="flex flex-wrap gap-2">
-                                                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                                                    Sent: {campaign.deliveryStats?.sent || 0}
-                                                </span>
-                                                <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                                                    Failed: {campaign.deliveryStats?.failed || 0}
-                                                </span>
-                                                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                                                    Pending: {campaign.deliveryStats?.pending || 0}
-                                                </span>
+                                    <Link
+                                        href={`/Home/${campaign._id}`}
+                                        key={index}
+                                    >
+                                        <div className="bg-white p-6 rounded-lg border hover:shadow-lg transition-shadow">
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                                <h3 className="text-xl font-semibold">{campaign.name}</h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                                        Sent: {campaign.deliveryStats?.sent || 0}
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                                                        Failed: {campaign.deliveryStats?.failed || 0}
+                                                    </span>
+                                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                                                        Pending: {campaign.deliveryStats?.pending || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-gray-600 mb-4">
+                                                Message: {campaign.messageTemplate}
+                                            </p>
+
+                                            <div className="space-y-2 mb-4">
+                                                <p className="font-medium">Conditions:</p>
+                                                {campaign.segmentConditions?.map((condition, idx) => (
+                                                    <p key={idx} className="ml-4 text-gray-600">
+                                                        {condition.field} {condition.operator} {condition.value}
+                                                        {condition.logicOperator !== 'AND' && ` (${condition.logicOperator})`}
+                                                    </p>
+                                                ))}
+                                            </div>
+
+                                            <div className="flex flex-col md:flex-row justify-between text-sm text-gray-500">
+                                                <p>Audience: {campaign.audienceSize}</p>
+                                                <p>Created: {new Date(campaign.createdAt).toLocaleDateString()}</p>
                                             </div>
                                         </div>
-
-                                        <p className="text-gray-600 mb-4">
-                                            Message: {campaign.messageTemplate}
-                                        </p>
-
-                                        <div className="space-y-2 mb-4">
-                                            <p className="font-medium">Conditions:</p>
-                                            {campaign.segmentConditions?.map((condition, idx) => (
-                                                <p key={idx} className="ml-4 text-gray-600">
-                                                    {condition.field} {condition.operator} {condition.value}
-                                                    {condition.logicOperator !== 'AND' && ` (${condition.logicOperator})`}
-                                                </p>
-                                            ))}
-                                        </div>
-
-                                        <div className="flex flex-col md:flex-row justify-between text-sm text-gray-500">
-                                            <p>Audience: {campaign.audienceSize}</p>
-                                            <p>Created: {new Date(campaign.createdAt).toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
+                                    </Link>
                                 ))
                             ) : (
                                 <p className="text-center text-gray-500 py-8">No campaigns available.</p>
