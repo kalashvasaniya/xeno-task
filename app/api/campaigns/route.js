@@ -7,15 +7,15 @@ import Customer from '../../../models/Customer';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const shouldFail = () => Math.random() < 0.10;
+const shouldFail = () => Math.random() < 0.5;
 
-async function sendEmail(customer, messageTemplate, campaignName) {
+async function sendEmail(customer) {
     if (shouldFail()) return false;
 
     try {
         const campaignName = '10% off on your next order!';
         const message = `Hi ${customer.name}, here’s 10% off on your next order!`;
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
             to: [customer.email],
             subject: campaignName,
