@@ -66,8 +66,9 @@ const CampaignManager = () => {
             setConditions([]);
             setMessageTemplate('');
             alert('Campaign created successfully!');
+            window.location.reload();
         } catch (error) {
-            alert(`Failed to create campaign: ${error.message}`);
+            console.log(`Failed to create campaign: ${error.message}`);
         }
     };
 

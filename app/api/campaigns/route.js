@@ -7,7 +7,7 @@ import Customer from '../../../models/Customer';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const shouldFail = () => Math.random() < 0.9;
+const shouldFail = () => Math.random() < 0.10;
 
 async function sendEmail(customer) {
     if (shouldFail()) return false;
